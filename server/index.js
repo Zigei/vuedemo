@@ -9,3 +9,42 @@ const pkg = require('./package');
 const winston = require('winston');
 const expressWinston = require('express-winston');
 const tools = require('./lib/tools');
+const app = express();
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('views engine', 'ejs');
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+	name: config.session.key,
+	secret: config.session.secret,
+	resave: true,
+	saveUninitialized: false,
+	cookie: {
+		maxAge: config.session.maxAge
+	},
+	store: new MongoStore({
+		url: copnfig.mongodb
+	})
+}))
+
+
+app.use(flash());
+
+app.locals.times = {
+	title: pkg.name,
+	description: pkg.description
+}
+
+app.use((req, res, next) => {
+	res.locals.user = req.session.user;
+	res.locals.success = req.flash('success').toString();
+	res.locals.error = req.flash('error').toString();
+	next();
+});
+
+router(app);
+
+app.listen(config.port, () => {
+	console.log(`${pkg.name} listening on port ${config.port}`);
+});

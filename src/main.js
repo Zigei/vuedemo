@@ -9,7 +9,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import store from './store'
 
 Vue.use(VueResource);
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
