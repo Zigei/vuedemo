@@ -45,6 +45,24 @@ app.use((req, res, next) => {
 
 router(app);
 
+app.use(expressWinston.errorLogger({
+	transports: [
+		new winston.transports.Console({
+			json: true,
+			colorize: true
+		}),
+		new winston.transports.File({
+			filename: `logs/${tools.nowTime()}.log`
+		})
+	]
+}))
+
+app.use((err, req, res, next) => {
+	res.render('error', {
+		error: err
+	})
+})
+
 app.listen(config.port, () => {
 	console.log(`${pkg.name} listening on port ${config.port}`);
 });
